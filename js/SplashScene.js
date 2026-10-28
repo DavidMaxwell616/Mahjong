@@ -104,6 +104,8 @@ export class SplashScene extends Phaser.Scene {
     const width = gameSize?.width || this.scale.width;
     const height = gameSize?.height || this.scale.height;
     const zoom = Math.min(width / W, height / H);
+    // Update the viewport before centering, including during orientation changes.
+    this.cameras.main.setViewport(0, 0, width, height);
     this.cameras.main.setZoom(zoom);
     this.cameras.main.centerOn(W / 2, H / 2);
   }

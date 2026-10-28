@@ -115,7 +115,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     levelSettings() {
-        const tileCount = Math.min(144, 24 + (this.level - 1) * 8);
+        const tileCount = 144;
         const themes = TILE_THEMES.filter(
             ({ key, level }) => this.level >= level && this.textures.exists(`theme-${key}`),
         );
@@ -162,6 +162,7 @@ export class GameScene extends Phaser.Scene {
         this.landscapeTabletop = this.add.graphics().setDepth(-21);
 
         const g = this.add.graphics().setDepth(-20);
+        this.tabletopArtwork = g;
 
         // Deep emerald satin, brightest at the upper-left like the reference.
         g.fillGradientStyle(0x0b9b68, 0x073e39, 0x08724f, 0x032c2d, 1);
@@ -354,7 +355,8 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.centerOn(W / 2, H / 2);
 
         if (!isLandscape) {
-            this.landscapeTabletop.clear();
+            this.drawLandscapeTabletop(left, right, top + 94, bottom - 118);
+            this.fitTabletopArtwork(left, right, top + 94, bottom - 118);
             this.rackOffsetY = top + 106 - 123;
             this.rackLayer.setY(this.rackOffsetY);
             this.rack.forEach((entry, index) => {
@@ -392,6 +394,7 @@ export class GameScene extends Phaser.Scene {
             top,
             bottom,
         );
+        this.fitTabletopArtwork(left + sidebarWidth, right - sidebarWidth, top, bottom);
 
         // The rack artwork begins at local y=123. Align it to the visible top.
         this.rackOffsetY = top + 8 - 123;
@@ -430,6 +433,16 @@ export class GameScene extends Phaser.Scene {
         this.hintBtn.c.setPosition(rightCenter, top + 450).setScale(1);
         this.undoBtn.c.setPosition(rightCenter, top + 680).setScale(1);
         this.applyBoardLayout(true, top, bottom, left + sidebarWidth, right - sidebarWidth);
+    }
+
+    fitTabletopArtwork(left, right, top, bottom) {
+        // The original artwork spans x=0..768 and y=94..906.
+        // Fit that surface to the playable viewport instead of leaving a
+        // portrait-sized frame in the middle of a larger canvas.
+        const scaleX = (right - left) / W;
+        const scaleY = (bottom - top) / 812;
+        this.tabletopArtwork.setScale(scaleX, scaleY)
+            .setPosition(left, top - 94 * scaleY);
     }
 
     drawLandscapeTabletop(left, right, top, bottom) {

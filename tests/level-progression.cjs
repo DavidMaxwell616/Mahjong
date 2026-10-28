@@ -21,7 +21,7 @@ for (let level = 1; level <= 100; level++) {
     const settings = scene.levelSettings();
     const positions = scene.layout();
     const deck = scene.deck();
-    assert.equal(settings.tileCount, Math.min(144, 24 + (level - 1) * 8));
+    assert.equal(settings.tileCount, 144);
     assert.equal(positions.length, settings.tileCount);
     assert.equal(deck.length, positions.length);
     assert.equal(new Set(positions.map((p) => `${p.l}:${p.c}:${p.r}`)).size, positions.length);
